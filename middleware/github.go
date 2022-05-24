@@ -32,6 +32,7 @@ func GitHubMiddleware(ctx *gin.Context) {
 	login := os.Getenv("GH_LOGIN")
 	if login == "" {
 		ctx.AbortWithStatus(http.StatusInternalServerError)
+		return
 	}
 	oauthClient := oauth2.NewClient(
 		ctx, oauth2.StaticTokenSource(
@@ -41,6 +42,7 @@ func GitHubMiddleware(ctx *gin.Context) {
 	user, _, err := client.Users.Get(ctx, "")
 	if err != nil {
 		ctx.AbortWithStatus(http.StatusInternalServerError)
+		return
 	}
 	if user.GetLogin() != login {
 		ctx.String(
@@ -48,6 +50,7 @@ func GitHubMiddleware(ctx *gin.Context) {
 			"GitHub token OK but you're not the user I wanted.",
 		)
 		ctx.Abort()
+		return
 	}
 	ctx.Next()
 }
